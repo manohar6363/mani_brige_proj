@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Bridges - Civil Engineering Mini Project</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Indian Bridges Database</h1>
+    </header>
+    
+    <main>
+        <section class="search-container">
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="Search Indian Bridges">
+                <button id="searchButton" aria-label="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+            <div id="dropdown" class="dropdown hidden">
+                <ul id="bridgeList">
+                    <li data-bridge="Howrah Bridge">Howrah Bridge - Kolkata</li>
+                    <li data-bridge="Bandra-Worli Sea Link">Bandra-Worli Sea Link - Mumbai</li>
+                    <li data-bridge="Vidyasagar Setu">Vidyasagar Setu - Kolkata</li>
+                    <li data-bridge="Bhupen Hazarika Setu">Bhupen Hazarika Setu - Assam</li>
+                    <li data-bridge="Mahatma Gandhi Setu">Mahatma Gandhi Setu - Patna</li>
+                    <li data-bridge="Godavari Arch Bridge">Godavari Arch Bridge - Rajahmundry</li>
+                    <li data-bridge="Pamban Bridge">Pamban Bridge - Tamil Nadu</li>
+                    <li data-bridge="Vembanad Rail Bridge">Vembanad Rail Bridge - Kerala</li>
+                    <li data-bridge="Bogibeel Bridge">Bogibeel Bridge - Assam</li>
+                    <li data-bridge="Krishna Raja Sagar Dam">Krishna Raja Sagar Dam - Karnataka</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Mini Project – Department of Civil Engineering</p>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
+
