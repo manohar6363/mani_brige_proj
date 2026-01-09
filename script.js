@@ -119,6 +119,114 @@ const bridgeData = {
     }
 };
 
+// Calculation configuration based on bridge type
+const calculationConfig = {
+    road: {
+        name: "Road Bridge",
+        DL: 20,      // Dead Load (kN/m)
+        LL: 30,      // Live Load (kN/m) - vehicular
+        L: 100       // Span length (m)
+    },
+    railway: {
+        name: "Railway Bridge",
+        DL: 30,      // Dead Load (kN/m)
+        LL: 70,      // Live Load (kN/m) - railway load
+        L: 100       // Span length (m)
+    },
+    combined: {
+        name: "Road + Rail Bridge",
+        DL: 35,      // Dead Load (kN/m)
+        LL: 90,      // Live Load (kN/m) - combined higher load
+        L: 100       // Span length (m)
+    }
+};
+
+// Bridge category mapping
+const bridgeCategories = {
+    "Howrah Bridge": "road",
+    "Bandra-Worli Sea Link": "road",
+    "Pamban Bridge": "railway",
+    "Krishna Raja Sagar Dam": "road",
+    "Vidyasagar Setu": "road",
+    "Bhupen Hazarika Setu": "road",
+    "Rohini Setu": "road",
+    "Mahatma Gandhi Setu": "road",
+    "Godavari Arch Bridge": "railway",
+    "Vembanad Rail Bridge": "railway",
+    "Bogibeel Bridge": "combined"
+};
+
+// Helper function to get bridge category
+function getBridgeCategory(bridgeName) {
+    return bridgeCategories[bridgeName] || "road";
+}
+
+// Helper function to get default values based on bridge type
+function getDefaultValues(bridgeName) {
+    const category = getBridgeCategory(bridgeName);
+    return calculationConfig[category];
+}
+
+// Helper function to generate calculation HTML with input fields
+function generateCalculationsHTML(bridgeName) {
+    const defaults = getDefaultValues(bridgeName);
+    
+    return `
+        <div class="calculations-box">
+            <h4>Calculations (${defaults.name})</h4>
+            <div class="calc-inputs">
+                <div class="input-group">
+                    <label for="spanLength">Span Length (L) m:</label>
+                    <input type="number" id="spanLength" value="${defaults.L}" min="1" step="1">
+                </div>
+                <div class="input-group">
+                    <label for="deadLoad">Dead Load (DL) kN/m:</label>
+                    <input type="number" id="deadLoad" value="${defaults.DL}" min="1" step="1">
+                </div>
+                <div class="input-group">
+                    <label for="liveLoad">Live Load (LL) kN/m:</label>
+                    <input type="number" id="liveLoad" value="${defaults.LL}" min="1" step="1">
+                </div>
+            </div>
+            <button id="calculateBtn" class="calculate-btn">Calculate</button>
+            <div id="calcResults" class="calc-results" style="display: none;">
+                <div class="result-item">
+                    <span class="result-label">Total Load per meter:</span>
+                    <span id="totalLoadPerMeter" class="result-value">-- kN/m</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Total Load:</span>
+                    <span id="totalLoad" class="result-value">-- kN</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Bending Moment:</span>
+                    <span id="bendingMoment" class="result-value">-- kN·m</span>
+                </div>
+            </div>
+            <div class="calc-notes">
+                <p><em>DL = Dead Load | LL = Live Load | w = Total Load per meter | L = Span Length</em></p>
+            </div>
+        </div>
+    `;
+}
+
+// Function to perform calculations
+function performCalculation() {
+    const spanLength = parseFloat(document.getElementById('spanLength').value) || 0;
+    const deadLoad = parseFloat(document.getElementById('deadLoad').value) || 0;
+    const liveLoad = parseFloat(document.getElementById('liveLoad').value) || 0;
+    
+    const totalLoadPerMeter = deadLoad + liveLoad;
+    const totalLoad = totalLoadPerMeter * spanLength;
+    const bendingMoment = (totalLoadPerMeter * Math.pow(spanLength, 2)) / 8;
+    
+    document.getElementById('totalLoadPerMeter').textContent = totalLoadPerMeter.toFixed(2) + ' kN/m';
+    document.getElementById('totalLoad').textContent = totalLoad.toFixed(2) + ' kN';
+    document.getElementById('bendingMoment').textContent = bendingMoment.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' kN·m';
+    
+    document.getElementById('calcResults').style.display = 'block';
+}
+
 // Create bridge info card container
 const bridgeInfoContainer = document.createElement('div');
 bridgeInfoContainer.id = 'bridgeInfoCard';
@@ -145,26 +253,42 @@ function displayBridgeInfo(bridgeName) {
         bridgeImage.style.display = 'none';
     }
     
-    // Create info content (after the image)
+    // Generate calculations HTML
+    const calculationsHTML = generateCalculationsHTML(bridgeName);
+    
+    // Create info content with two-column layout
     const infoHTML = `
-        <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 1.3rem;">${bridgeName}</h3>
-        <div style="display: grid; gap: 10px;">
-            <p><strong>Location:</strong> ${bridge.location}</p>
-            <p><strong>Year Completed:</strong> ${bridge.year}</p>
-            <p><strong>Chief Engineer:</strong> ${bridge.engineer}</p>
-            <p><strong>Construction Time:</strong> ${bridge.constructionTime}</p>
-            <p><strong>Type:</strong> ${bridge.type}</p>
-            <p><strong>Load Capacity:</strong> ${bridge.loadCapacity}</p>
-            <p><strong>Expected Life:</strong> ${bridge.life}</p>
+        <div class="bridge-content">
+            <div class="bridge-info-section">
+                <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 1.3rem;">${bridgeName}</h3>
+                <div style="display: grid; gap: 10px;">
+                    <p><strong>Location:</strong> ${bridge.location}</p>
+                    <p><strong>Year Completed:</strong> ${bridge.year}</p>
+                    <p><strong>Chief Engineer:</strong> ${bridge.engineer}</p>
+                    <p><strong>Construction Time:</strong> ${bridge.constructionTime}</p>
+                    <p><strong>Type:</strong> ${bridge.type}</p>
+                    <p><strong>Load Capacity:</strong> ${bridge.loadCapacity}</p>
+                    <p><strong>Expected Life:</strong> ${bridge.life}</p>
+                </div>
+            </div>
+            <div class="bridge-calculations-section">
+                ${calculationsHTML}
+            </div>
         </div>
     `;
     
     // Insert info after image
     if (bridgeInfoContainer.querySelector('h3')) {
-        const oldContent = bridgeInfoContainer.querySelectorAll('h3, div');
+        const oldContent = bridgeInfoContainer.querySelectorAll('.bridge-content');
         oldContent.forEach(el => el.remove());
     }
     bridgeImage.insertAdjacentHTML('afterend', infoHTML);
+    
+    // Add event listener for calculate button
+    const calculateBtn = document.getElementById('calculateBtn');
+    if (calculateBtn) {
+        calculateBtn.addEventListener('click', performCalculation);
+    }
     
     bridgeInfoContainer.style.display = 'block';
 }
